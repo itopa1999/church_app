@@ -1,0 +1,62 @@
+{% if messages %}
+{% for m in messages %}
+{% if m.tags == 'error' %}
+<script>
+    function message(){
+        Swal.fire({
+            title: '<strong>{{m}}!</strong>',
+            icon: 'error',
+            iconColor:'#f82249',
+            background:'rgba(6, 12, 34, 0.98)',
+            color:'#fff',
+            width: 400,
+            showConfirmButton:false,
+            allowOutsideClick:true,
+            scrollbarPadding:false,
+            showCloseButton: true,
+          })
+          
+    }
+{% endif %}
+  </script>
+  {% if m.tags == 'success' %}
+  <script>
+      function message(){
+          Swal.fire({
+              title: '<strong>{{m}}!</strong>',
+              icon: 'success',
+              iconColor:'#6be63b',
+              width: 400,
+              color:'#f82249',
+              background:'rgba(6, 12, 34, 0.98)',
+              showConfirmButton:false,
+              allowOutsideClick:true,
+              scrollbarPadding:false,
+              showCloseButton: true,
+            })
+            
+      }
+  {% endif %}
+    </script>
+
+{% if m.tags == 'info' %}
+<script>
+    function message(){
+        Swal.fire({
+            title: '<strong>{{m}}!</strong>',
+            icon: 'info',
+            iconColor:'#68c1eb',
+            background:'rgba(6, 12, 34, 0.98)',
+            width: 350,
+            color:'#fff',
+            showConfirmButton:false,
+            allowOutsideClick:false,
+            scrollbarPadding:false,
+            showCloseButton: true,
+          })
+          
+    }
+{% endif %}
+  </script>
+  {% endfor %}
+  {% endif %}
