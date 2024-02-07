@@ -66,9 +66,8 @@ class Question(models.Model):
     
     
 class Attendance(models.Model):
-    day =(('Day 1', 'Day 1'),('Day 2', 'Day 2'),('Day 3', 'Day 3'))
     member = models.ForeignKey(Member,blank=True, null=True, on_delete=models.CASCADE)
-    day = models.CharField(max_length=200, blank=True,null=True,choices=day)
+    day = models.CharField(max_length=200, blank=True,null=True)
     date= models.DateTimeField(auto_now_add=True, blank=True)
 
     class Meta:

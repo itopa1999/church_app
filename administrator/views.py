@@ -7,7 +7,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required,user_passes_test
 from .models import *
-from .filters import MemberFilter
+from .filters import MemberFilter, AttendanceFilter
 from django.http import HttpResponse
 import csv
 from datetime import datetime, date
@@ -114,6 +114,7 @@ def question1(request):
 @login_required(login_url='admin-login')
 def admin_attendance(request):
     attend=Attendance.objects.all()
+    department=Department.objects.all()
     myFilter=AttendanceFilter(request.GET, queryset=attend)
     attend=myFilter.qs
     count = len(attend)
@@ -125,21 +126,33 @@ def admin_attendance(request):
         page = p.page(1)
     except EmptyPage:
         page = p.page(p.num_pages)
-    return render(request, "attendance.html",  {"attend":page,"count":count})
+    return render(request, "attendance.html",  {"attend":page,"count":count,'department':department})
 
 
 
-def export_student(request):
+def filter_attendance_download(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Student.csv"'
+    response['Content-Disposition'] = 'attachment; filename="Fltered Attendance.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['first Name', 'Last Name', 'Email', 'UserID','Profile ID', 'Created Date', 'Updated Date'])
+    writer.writerow(['Name', 'Email', 'Phone','Gender', 'Day','Assembly', 'District','Department',' Date and Time'])
     attend=Attendance.objects.all()
     myFilter=AttendanceFilter(request.GET, queryset=attend)
     attend=myFilter.qs
     for attend in attend:
-        writer.writerow([stu.first_name, stu.last_name, stu.email,stu.userid,stu.profile_ID,stu.created_at,stu.updated_at])
+        writer.writerow([attend.member.name, attend.member.email, attend.member.phone,attend.member.gender,attend.day,attend.member.assembly,attend.member.district,attend.member.department,attend.date])
+
+    return response
+
+
+def all_attendance_download(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Fltered Attendance.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Name', 'Email', 'Phone','Gender', 'Day','Assembly', 'District','Department',' Date and Time'])
+    attend=Attendance.objects.all()
+    for attend in attend:
+        writer.writerow([attend.member.name, attend.member.email, attend.member.phone,attend.member.gender,attend.day,attend.member.assembly,attend.member.district,attend.member.department,attend.date])
 
     return response
 

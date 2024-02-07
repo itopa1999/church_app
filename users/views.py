@@ -42,7 +42,7 @@ def Validation(value, request):
         value1 = value[1:]
     else:
         value1= value
-    mem = Member.objects.filter(Q(email__icontains=value1) | Q(phone__icontains=value1)).first()
+    mem = Member.objects.filter(Q(email__icontains=value1) | Q(phone__icontains=value1),date__year=2024).first()
     if mem is None:
         pass
     else:
@@ -54,9 +54,10 @@ def Validation(value, request):
 
 def attendance(request):
     if request.method=="POST":
-        date1 = datetime(2024, 2, 6).date()
-        date2 = datetime(2024, 2, 6).date()
-        date3 = datetime(2024, 2, 6).date()
+        date1 = datetime(2024, 3, 27).date()
+        date2 = datetime(2024, 3, 28).date()
+        date3 = datetime(2024, 3, 29).date()
+        date4 = datetime(2024, 3, 30).date()
         value= request.POST.get('member')
         if request.POST.get('day') == 'day1':
             if datetime.now().date() == date1:
@@ -97,7 +98,7 @@ def attendance(request):
                     return redirect('index') 
             else:
                 messages.error(request, 'Sorry Attendance for this Day 2 is invalid.')
-        else:
+        elif request.POST.get('day') == 'day3':
             if datetime.now().date() == date3:
                 mem = Validation(value, request)
                 if mem is not None:
@@ -116,5 +117,24 @@ def attendance(request):
                     return redirect('index') 
             else:
                 messages.error(request, 'Sorry Attendance for this Day 3 is invalid.')
+        else:
+            if datetime.now().date() == date4:
+                mem = Validation(value, request)
+                if mem is not None:
+                    if Attendance.objects.filter(member__name = mem, day='Day 4').exists():
+                        messages.info(request, 'You have already mark your attendance for Day 4.')
+                        return redirect('index')
+                    else:
+                        Attendance.objects.create(
+                            member = mem,
+                            day='Day 4'
+                        )
+                        messages.success(request, 'Congratulations you have mark your attendance for Day 4.')
+                        return redirect('index')
+                else:
+                    messages.error(request, 'We cannot find any member that is associate with this ' + str(value) + ', Check for typo error or Register')
+                    return redirect('index') 
+            else:
+                messages.error(request, 'Sorry Attendance for this Day 4 is invalid.')
         return redirect('index')
     return redirect('index')

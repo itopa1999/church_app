@@ -11,7 +11,9 @@ urlpatterns = [
     path('question', views.question, name="question"),
     
     path('filter-results-download', views.filter_results_download, name="filter-results-download"),
+    path('filter-attendance-download', views.filter_attendance_download, name="filter-attendance-download"),
     path('all-results-download', views.all_results_download, name="all-results-download"),
+    path('all-attendance-download', views.all_attendance_download, name="all-attendance-download"),
     
     path('admin-attendance', views.admin_attendance, name="admin-attendance"),
     
