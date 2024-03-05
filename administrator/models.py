@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import Group
 from django.utils import timezone
-
+import random
 # Create your models here.
 
 class Department(models.Model):
@@ -79,3 +79,22 @@ class Attendance(models.Model):
     def __str__(self):
         return str(self.member)
     
+    
+class Tracking(models.Model):
+    user = models.CharField(max_length=200, blank=True,null=True) 
+    action = models.CharField(max_length=2000, blank=True,null=True)
+    color = models.CharField(max_length=10, blank=True,null=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True,null=True)
+    def save(self, *args, **kwargs) -> None:
+        if self.color == None:
+            self.color = random.choice(['success', 'danger', 'warning', 'secondary','primary','dark'])
+        super().save(*args, **kwargs)
+    
+    class Meta:
+        ordering = ['-date']
+        indexes = [
+            models.Index(fields=['-date']),
+        ]
+        
+    def __str__(self):
+        return self.user

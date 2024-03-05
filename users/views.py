@@ -7,12 +7,15 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.db.models import Q
 from datetime import datetime, date
+from django.contrib.auth.decorators import login_required,user_passes_test
+from users.models import *
+from .forms import *
 # Create your views here.
 
 
 def index(request):
     form=MemberForm()
-    return render(request, 'index.html',{'form':form})
+    return render(request, 'users/index.html',{'form':form})
 
 
 def register_form(request):
@@ -37,6 +40,33 @@ def register_form(request):
             messages.success(request, "Hi " +str(request.POST.get('name'))+ ", your registration was successful and we have emailed you.")
             return redirect('index')
 
+def admin_addadm(request, pk):
+    district=District.objects.get(id=pk)
+    form = UserCreationForm()
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form=form.save(commit=False)
+            form.district = district
+            form.save()
+            group= Group.objects.get(name='secretary')
+            form.groups.add(group)
+            messages.success(request, str(district) + ' admin has been created')
+    return redirect('admin-disrict-details', district.id)
+
+def admin_edit_admin(request, pk):
+    district=District.objects.get(id=pk)
+    district_user = User.objects.filter(groups=Group.objects.get(name='secretary'), district=district).first()
+    if request.method == 'POST':
+        form = UserChangeForm(request.POST, instance=district_user)
+        if form.is_valid():
+            form=form.save(commit=False)
+            form.district = district
+            form.save()
+            messages.success(request, str(district) + ' admin has been updated successfully')
+    return redirect('admin-disrict-details', district.id)
+
+
 def Validation(value, request):
     if value.isdigit() and len(value) <=12:
         value1 = value[1:]
@@ -47,9 +77,6 @@ def Validation(value, request):
         pass
     else:
         return mem
-        
-        
-
 
 
 def attendance(request):
@@ -77,7 +104,7 @@ def attendance(request):
                     messages.error(request, 'We cannot find any member that is associate with this ' + str(value) + ', Check for typo error or Register')
                     return redirect('index') 
             else:
-                messages.error(request, 'Sorry Attendance for this Day 1 is invalid.')
+                messages.error(request, 'Sorry Attendance for "Day 1" is invalid.')
             
         elif request.POST.get('day') == 'day2':
             if datetime.now().date() == date2:
@@ -97,7 +124,7 @@ def attendance(request):
                     messages.error(request, 'We cannot find any member that is associate with this ' + str(value) + ', Check for typo error or Register')
                     return redirect('index') 
             else:
-                messages.error(request, 'Sorry Attendance for this Day 2 is invalid.')
+                messages.error(request, 'Sorry Attendance for "Day 2" is invalid.')
         elif request.POST.get('day') == 'day3':
             if datetime.now().date() == date3:
                 mem = Validation(value, request)
@@ -116,7 +143,7 @@ def attendance(request):
                     messages.error(request, 'We cannot find any member that is associate with this ' + str(value) + ', Check for typo error or Register')
                     return redirect('index') 
             else:
-                messages.error(request, 'Sorry Attendance for this Day 3 is invalid.')
+                messages.error(request, 'Sorry Attendance for "Day 3" is invalid.')
         else:
             if datetime.now().date() == date4:
                 mem = Validation(value, request)
@@ -135,6 +162,36 @@ def attendance(request):
                     messages.error(request, 'We cannot find any member that is associate with this ' + str(value) + ', Check for typo error or Register')
                     return redirect('index') 
             else:
-                messages.error(request, 'Sorry Attendance for this Day 4 is invalid.')
+                messages.error(request, 'Sorry Attendance for "Day 4" is invalid.')
         return redirect('index')
     return redirect('index')
+
+
+
+def rules(request):
+    form = MemberForm()
+    return render(request, 'users/rules.html',{'form':form})
+
+
+def tenets(request):
+    form = MemberForm()
+    return render(request, 'users/tenets.html',{'form':form})
+
+
+def vision(request):
+    form = MemberForm()
+    return render(request, 'users/vision.html',{'form':form})
+
+
+def fft(request):
+    form = MemberForm()
+    return render(request, 'users/fft.html',{'form':form})
+
+
+
+def hymns(request):
+    form = MemberForm()
+    return render(request, 'users/hymns.html',{'form':form})
+
+
+

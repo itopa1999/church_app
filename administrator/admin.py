@@ -6,3 +6,6 @@ admin.site.register(Member)
 admin.site.register(Department)
 admin.site.register(Question)
 admin.site.register(Attendance)
+
+
+admin.site.register(Tracking)

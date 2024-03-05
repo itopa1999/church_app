@@ -7,10 +7,16 @@ import string
 # Create your models here.
 
 
-class Department(models.Model):
+class District(models.Model):
     name = models.CharField(max_length=500,unique=True, null=True,blank=True)
     address =models.CharField(max_length=1000,unique=True, null=True,blank=True)
+    date = models.DateTimeField(auto_now_add=True,null=True)
     
+    def save(self, *args, **kwargs):
+        self.name = self.name.upper()
+        super().save(*args, **kwargs)
+        
+        
     class Meta:
         ordering = ['name']
         indexes = [
@@ -24,14 +30,10 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(max_length=150, unique=True, null=True, blank=True)
     phone = models.CharField(max_length=150,null=True, blank=True)
-    department =models.ForeignKey(Department,on_delete=models.SET_NULL,null=True, blank=True)
-    exam = models.BooleanField(default=True,null=True, blank=True)
+    district =models.ForeignKey(District,on_delete=models.SET_NULL,null=True, blank=True)
     def save(self, *args, **kwargs):
         self.first_name = self.first_name.upper()
         self.last_name = self.last_name.upper()
-        if not self.id and not self.password:
-            self.set_password(self.last_name.lower())
-
         super().save(*args, **kwargs)
 
     objects=UserManager( )
@@ -39,9 +41,9 @@ class User(AbstractUser):
     REQUIRED_FIELDS=['first_name','last_name']
 
     class Meta:
-        ordering = ['-department']
+        ordering = ['-district']
         indexes = [
-            models.Index(fields=['-department']),
+            models.Index(fields=['-district']),
         ]
     
     def __str__(self):

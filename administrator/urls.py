@@ -16,6 +16,21 @@ urlpatterns = [
     path('all-attendance-download', views.all_attendance_download, name="all-attendance-download"),
     
     path('admin-attendance', views.admin_attendance, name="admin-attendance"),
+    path('admin-program', views.admin_program, name="admin-program"),
+    
+    path('admin-disrict-details/<int:pk>', views.admin_disrict_details, name="admin-disrict-details"),
+    path('admin-district', views.admin_district, name="admin-district"),
+    path('admin-program', views.admin_program, name="admin-program"),
+    
+    path('admin-district-member', views.admin_district_member, name="admin-district-member"),
+    
+    path('admin_member_download', views.admin_member_download, name="admin_member_download"),
+    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+    path('admin-district-new-member', views.admin_district_new_member, name="admin-district-new-member"),
+    path('admin_new_member_download', views.admin_new_member_download, name="admin_new_member_download"),
+    path('admin-district-admin', views.admin_district_admin, name="admin-district-admin"),
+    path('admin-district-transaction', views.admin_district_transaction, name="admin-district-transaction"),
+    path('admin_district_transaction_download', views.admin_district_transaction_download, name="admin_district_transaction_download"),
     
     
 ]
