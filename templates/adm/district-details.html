@@ -10,7 +10,17 @@
         box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
       }
 </style>
-
+<div class="pagetitle container">
+  <h4>Welcome Back {{request.user.first_name}} <i class="bi bi-person-fill"></i></h4>
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'admin-dashboard' %}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'admin-district' %}">All Districts</a></li>
+      <li class="breadcrumb-item">{{district}}</li>
+      <li class="breadcrumb-item"></li>
+    </ol>
+  </nav>
+</div>
 <div class="container-fluid col-lg-12" data-aos="fade-up">
     <b><span>{{district.name}} District Details:: Address>>> {{district.address}}::: Administator>>> {% if district_user %}[{{district_user.first_name}}]{% else %}<span class='text-danger mt-4 font-weight-bolder'><i class="bi bi-x-circle"></i> No User for this District{% endif %}</span><hr></b>
     <div class="container">

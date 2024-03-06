@@ -4,7 +4,16 @@
 <style>
 
 </style>
-
+<div class="pagetitle container">
+  <h4>Welcome Back {{request.user.first_name}} <i class="bi bi-person-fill"></i></h4>
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'admin-dashboard' %}">Dashboard</a></li>
+      <li class="breadcrumb-item">All District Admin</li>
+      <li class="breadcrumb-item"></li>
+    </ol>
+  </nav>
+</div>
 <div class="container-fluid col-lg-12" data-aos="fade-up">
   <div class="container">
     <a href="#" data-bs-toggle="modal" data-bs-target="#AddAdmin"><button class="btn m-1 btn-secondary"><i class="bi bi-plus-square-fill"></i> Add District Admin</button></a>

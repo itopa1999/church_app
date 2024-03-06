@@ -10,6 +10,8 @@ from datetime import datetime, date
 from django.contrib.auth.decorators import login_required,user_passes_test
 from users.models import *
 from .forms import *
+from .decorators import *
+from administrator.models import Tracking
 # Create your views here.
 
 
@@ -39,7 +41,10 @@ def register_form(request):
                 email.send(fail_silently=False)
             messages.success(request, "Hi " +str(request.POST.get('name'))+ ", your registration was successful and we have emailed you.")
             return redirect('index')
+        
 
+@login_required(login_url='admin-login')
+@admin_only
 def admin_addadm(request, pk):
     district=District.objects.get(id=pk)
     form = UserCreationForm()
@@ -51,9 +56,15 @@ def admin_addadm(request, pk):
             form.save()
             group= Group.objects.get(name='secretary')
             form.groups.add(group)
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + 'create admin ' + str(request.POST.get('first_name')) + ' to ' + str(district) + ' District'
+            )
             messages.success(request, str(district) + ' admin has been created')
     return redirect('admin-disrict-details', district.id)
 
+@login_required(login_url='admin-login')
+@admin_only
 def admin_edit_admin(request, pk):
     district=District.objects.get(id=pk)
     district_user = User.objects.filter(groups=Group.objects.get(name='secretary'), district=district).first()
@@ -63,6 +74,10 @@ def admin_edit_admin(request, pk):
             form=form.save(commit=False)
             form.district = district
             form.save()
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + 'updated ' + str(request.POST.get('first_name'))
+            )
             messages.success(request, str(district) + ' admin has been updated successfully')
     return redirect('admin-disrict-details', district.id)
 

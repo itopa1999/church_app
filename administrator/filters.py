@@ -59,3 +59,13 @@ class AdminTransactionFilter(django_filters.FilterSet):
     class Meta:
         model = Transaction
         fields = ['district','type','date__lte','date__gte']
+        
+        
+
+class TrackingFilter(django_filters.FilterSet):
+    user = django_filters.CharFilter(field_name='user', lookup_expr='icontains')
+    date__lte = django_filters.DateFilter(field_name='date', lookup_expr='lte')
+    date__gte = django_filters.DateFilter(field_name='date', lookup_expr='gte')
+    class Meta:
+        model = Tracking
+        fields = ['user','date__lte','date__gte']

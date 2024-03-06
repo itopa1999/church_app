@@ -9,6 +9,8 @@ from users.models import *
 from .filters import *
 from .forms import *
 from .models import *
+from users.decorators import *
+from administrator.models import Tracking
 # Create your views here.
 
 def is_admin(user):
@@ -16,6 +18,8 @@ def is_admin(user):
 def is_secretary(user):
     return user.groups.filter(name='secretary').exists()
 
+@login_required(login_url='admin-login')
+@secretary_only
 def secretary_dashboard(request):
     
     district=District.objects.get(id=request.user.district.id)
@@ -32,7 +36,7 @@ def secretary_dashboard(request):
     
 
 
-
+@login_required(login_url='admin-login')
 def admin_add_member(request, pk):
     district=District.objects.get(id=pk)
     form = ChurchMemberForm()
@@ -42,13 +46,17 @@ def admin_add_member(request, pk):
             form=form.save(commit=False)
             form.district = district
             form.save()
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + 'added a new member ' + str(request.POST.get('name'))
+            )
             messages.success(request, 'member has been successfully added to ' + str(district) )
             if is_secretary(request.user): 
                 return redirect('secretary-dashboard')
     return redirect('admin-disrict-details', district.id)
 
 
-
+@login_required(login_url='admin-login')
 def admin_add_new_member(request, pk):
     district=District.objects.get(id=pk)
     form = ChurchNewMemberForm()
@@ -58,11 +66,14 @@ def admin_add_new_member(request, pk):
             form=form.save(commit=False)
             form.district = district
             form.save()
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + 'added a new church member ' + str(request.POST.get('name'))
+            )
             messages.success(request, 'new member has been successfully added to ' + str(district) )
             if is_secretary(request.user): 
                 return redirect('secretary-dashboard')
     return redirect('admin-disrict-details', district.id)
-
 
 
 @login_required(login_url='admin-login')
@@ -83,10 +94,13 @@ def district_member(request, pk):
     return render(request, "secretary/district-members.html",{'district':district,'district_member':page,'department':department})
 
 
-
 @login_required(login_url='admin-login')
 def filter_church_results_download(request, pk):
     district=District.objects.get(id=pk)
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + 'download ' + str(district) + ' Church Member Report'
+    )
     mem=Church_Member.objects.filter(district = district)
     myFilter=DistrictMemberFilter(request.GET, queryset=mem)
     mem=myFilter.qs
@@ -107,6 +121,10 @@ def filter_church_results_download(request, pk):
 @login_required(login_url='admin-login')
 def all_church_member_download(request, pk):
     district=District.objects.get(id=pk)
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + 'download ' + str(district) + ' All Church Member Report'
+    )
     mem=Church_Member.objects.filter(district = district)
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename ="All Church Member Report.csv"'
@@ -120,7 +138,7 @@ def all_church_member_download(request, pk):
         csv_writer.writerow(data_row)
     return response
 
-
+@login_required(login_url='admin-login')
 def edit_member(request, pk):
     mem = Church_Member.objects.get(id=pk)
     form = ChurchMemberForm(instance=mem)
@@ -128,12 +146,16 @@ def edit_member(request, pk):
         form= ChurchMemberForm(request.POST,instance=mem)
         if form.is_valid():
             form.save()
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + 'updated ' + str(mem.name) 
+            )
             messages.success(request, 'Updated Successfully')
         else:
             messages.error(request, form.errors)
     return render(request, "secretary/edit-member.html",{'form':form,'mem':mem})
 
-
+@login_required(login_url='admin-login')
 def district_new_member(request, pk):
     district=District.objects.get(id=pk)
     mem=Church_New_Member.objects.filter(district = district)
@@ -153,6 +175,10 @@ def district_new_member(request, pk):
 @login_required(login_url='admin-login')
 def all_new_member_download(request, pk):
     district=District.objects.get(id=pk)
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + 'download ' + str(district) + ' New Member Report'
+    )
     mem=Church_New_Member.objects.filter(district = district)
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename ="New Member Report.csv"'
@@ -179,11 +205,15 @@ def add_to_member(request, pk):
         gender = mem.gender,
         age = mem.age   
     )
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + 'Changes ' + str(mem.name) +' to ' + str(mem.district) + ' Church Member Report'
+    )
     messages.success(request, 'successfully added to '+ str(mem.district))
     mem.delete()
     return redirect('district-new-member', mem.district.id)
 
-
+@login_required(login_url='admin-login')
 def district_income(request, pk):
     district=District.objects.get(id=pk)
     district_income = Income.objects.get(district = district)
@@ -204,9 +234,13 @@ def district_income(request, pk):
     return render(request, "secretary/district-income.html",{'tran':page,'district':district,'district_income':district_income,
                         'debit_total':debit_total,'credit_total':credit_total,'form':form})
 
-
+@login_required(login_url='admin-login')
 def transaction_download(request, pk):
     district=District.objects.get(id=pk)
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + 'download ' + str(district) + ' Transaction Report'
+    )
     tran = Transaction.objects.filter(district =district)
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename ="Transaction Report.csv"'
@@ -220,7 +254,8 @@ def transaction_download(request, pk):
         csv_writer.writerow(data_row)
     return response
 
-
+@login_required(login_url='admin-login')
+@secretary_only
 def add_income(request, pk):
     district=District.objects.get(id=pk)
     if request.method == 'POST':
@@ -237,6 +272,10 @@ def add_income(request, pk):
                     form=form.save(commit=False)
                     form.district = district
                     form.save()
+                    Tracking.objects.create(
+                        user= request.user.first_name,
+                        action = str(request.user.first_name) + 'deducted ' + str(request.POST.get('amount')) + ' from ' + str(district) + ' Account'
+                    )
             else:
                 district_income = Income.objects.get(district = district)
                 district_income.income +=  int(request.POST.get('amount'))
@@ -245,12 +284,16 @@ def add_income(request, pk):
                 form=form.save(commit=False)
                 form.district = district
                 form.save()
+                Tracking.objects.create(
+                    user= request.user.first_name,
+                    action = str(request.user.first_name) + 'added ' + str(request.POST.get('amount')) + ' to ' + str(district) + ' Account'
+                )
             messages.success(request, 'Income has been updated for ' + str(district) )
         except:
             messages.error(request, 'please make sure all fields are filled correctly')
         return redirect('district-income', district.id)
 
-
+@login_required(login_url='admin-login')
 def tran_receipt(request, pk):
     
     return render(request, "secretary/tran-receipt.html",{})

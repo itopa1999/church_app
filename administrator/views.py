@@ -7,7 +7,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required,user_passes_test
 from .models import *
-from .filters import MemberFilter, AttendanceFilter,AdminMemberFilter,AdminNewMemberFilter,AdminTransactionFilter
+from .filters import *
 from django.http import HttpResponse
 import csv
 from datetime import datetime, date
@@ -16,11 +16,15 @@ from users.models import *
 from django.db.models import Sum
 from users.forms import *
 from secretary.forms import *
+from users.decorators import *
 # Create your views here.
+
+
 def is_admin(user):
     return user.groups.filter(name='admin').exists()
 def is_secretary(user):
     return user.groups.filter(name='secretary').exists()
+
 
 def login_user(request):
     if request.method == "POST":
@@ -37,6 +41,10 @@ def login_user(request):
             email = EmailMessage(mail_subject, message, to=[request.POST.get('email')])
             email.content_subtype = "html"
             email.send(fail_silently=False)
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + ' Logged in ' 
+            )
             if is_admin(user):
                 return redirect('admin-dashboard')
             elif is_secretary(user):
@@ -53,6 +61,7 @@ def login_user(request):
 
 
 @login_required(login_url='admin-login')
+@admin_only
 def dashboard(request):
     year = datetime.now()
     attend=Attendance.objects.filter(date__year=year.year).count()
@@ -91,8 +100,14 @@ def member(request):
     
     return render(request, "adm/member.html",  {"mem":page,"department":department,'count':count})
 
+
+
 @login_required(login_url='admin-login')
 def filter_results_download(request):
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' Downloaded Program Register Member Report' 
+    )
     mem=Member.objects.all()
     myFilter=MemberFilter(request.GET, queryset=mem)
     mem=myFilter.qs
@@ -112,6 +127,10 @@ def filter_results_download(request):
 
 @login_required(login_url='admin-login')
 def all_results_download(request):
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' Downloaded Program All Register Member Report' 
+    )
     mem=Member.objects.all()
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename ="All Register Member Report.csv"'
@@ -154,6 +173,10 @@ def admin_attendance(request):
 
 @login_required(login_url='admin-login')
 def filter_attendance_download(request):
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' Downloaded Program Attendance Report' 
+    )
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="Fltered Attendance.csv"'
 
@@ -169,8 +192,12 @@ def filter_attendance_download(request):
 
 @login_required(login_url='admin-login')
 def all_attendance_download(request):
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' Downloaded Program All Attendance Report' 
+    )
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Fltered Attendance.csv"'
+    response['Content-Disposition'] = 'attachment; filename="All Attendance Report.csv"'
     writer = csv.writer(response)
     writer.writerow(['Name', 'Email', 'Phone','Gender', 'Day','Assembly', 'District','Department',' Date and Time'])
     attend=Attendance.objects.all()
@@ -212,6 +239,7 @@ def admin_program(request):
 
 
 @login_required(login_url='admin-login')
+@admin_only
 def admin_district(request):
     form = DistrictForm()
     district=District.objects.all()
@@ -219,12 +247,19 @@ def admin_district(request):
         form = DistrictForm(request.POST)
         if form.is_valid():
             form.save()
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + ' Added ' + str(request.POST.get('name') + ' to District') 
+            )
             messages.success(request, 'District added successfully')
         else:
             messages.error(request, form.errors)
     return render(request, "adm/district.html",{'district':district,'form':form})
 
+
+
 @login_required(login_url='admin-login')
+@admin_only
 def admin_disrict_details(request, pk):
     district=District.objects.get(id=pk)
     district_user = User.objects.filter(groups=Group.objects.get(name='secretary'), district=district).first()
@@ -241,12 +276,17 @@ def admin_disrict_details(request, pk):
         form = DistrictForm(request.POST,instance=district)
         if form.is_valid():
             form.save()
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + ' Updated ' + str(district) 
+            )
             messages.success(request, str(district) + ' has been updated sccessfully')
     return render(request, "adm/district-details.html",{'district':district,'district_user':district_user,'district_transaction':district_transaction,'district_member':district_member,
                             'district_income':district_income,'form':form,'form1':form1,'form2':form2,'form3':form3,'form4':form4,'district_new_member':district_new_member})
 
 
-
+@login_required(login_url='admin-login')
+@admin_only
 def admin_district_member(request):
     district_member = Church_Member.objects.all()
     district = District.objects.all()
@@ -263,8 +303,13 @@ def admin_district_member(request):
         page = p.page(p.num_pages)
     return render(request, "adm/admin-district-member.html",{'district_member':page,'district':district,'department':department})
 
-
+@login_required(login_url='admin-login')
+@admin_only
 def admin_member_download(request):
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' downloaded All Church Member Report' 
+    )
     mem=Church_Member.objects.all()
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename ="All Church Member Report.csv"'
@@ -278,8 +323,13 @@ def admin_member_download(request):
         csv_writer.writerow(data_row)
     return response
 
-
+@login_required(login_url='admin-login')
+@admin_only
 def admin_filter_church_results_download(request):
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' downloaded Filtered Church Member Report' 
+    )
     mem=Church_Member.objects.all()
     myFilter=AdminMemberFilter(request.GET, queryset=mem)
     mem=myFilter.qs
@@ -296,7 +346,8 @@ def admin_filter_church_results_download(request):
         csv_writer.writerow(data_row)
     return response
 
-
+@login_required(login_url='admin-login')
+@admin_only
 def admin_district_new_member(request):
     mem=Church_New_Member.objects.all()
     district = District.objects.all()
@@ -312,8 +363,13 @@ def admin_district_new_member(request):
         page = p.page(p.num_pages)
     return render(request, "adm/admin-district-new-member.html",{'mem':page,'district':district})
     
-    
+@login_required(login_url='admin-login')
+@admin_only
 def admin_new_member_download(request):
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' downloaded New Member Report' 
+    )
     mem=Church_New_Member.objects.all()
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename ="New Member Report.csv"'
@@ -327,6 +383,8 @@ def admin_new_member_download(request):
         csv_writer.writerow(data_row)
     return response
 
+@login_required(login_url='admin-login')
+@admin_only
 def admin_district_admin(request):
     district_user = User.objects.filter(groups=Group.objects.get(name='secretary'))
     form = UserCreationForm1()
@@ -341,10 +399,17 @@ def admin_district_admin(request):
                 group= Group.objects.get(name='secretary')
                 form.groups.add(group)
                 messages.success(request, 'Add successfully')
+                Tracking.objects.create(
+                    user= request.user.first_name,
+                    action = str(request.user.first_name) + ' created a new district ' + str(request.POST.get('name')) 
+                )
             else:
                 messages.error(request, form.errors)
     return render(request, "adm/admin-district-admin.html",{'district_user':district_user,'form':form})
-    
+
+
+@login_required(login_url='admin-login')
+@admin_only
 def admin_district_transaction(request):
     tran = Transaction.objects.all()
     district = District.objects.all()
@@ -363,7 +428,14 @@ def admin_district_transaction(request):
         page = p.page(p.num_pages)
     return render(request, "adm/admin-district-transaction.html",{'district':district,'tran':page,'debit_total':debit_total,'credit_total':credit_total,'district_income':district_income})
 
+
+@login_required(login_url='admin-login')
+@admin_only
 def admin_district_transaction_download(request):
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' download Transaction Report'
+    )
     tran = Transaction.objects.all()
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename ="Transaction Report.csv"'
@@ -376,3 +448,19 @@ def admin_district_transaction_download(request):
         data_row = [str(getattr(tran, field_name.name)) for field_name in Transaction._meta.fields]
         csv_writer.writerow(data_row)
     return response
+
+@login_required(login_url='admin-login')
+@admin_only
+def admin_tracking(request):
+    track = Tracking.objects.all()
+    myFilter=TrackingFilter(request.GET, queryset=track)
+    track=myFilter.qs
+    p=Paginator(track, 20)
+    page_num = request.GET.get('page',1)
+    try:
+        page = p.page(page_num)
+    except PageNotAnInteger:
+        page = p.page(1)
+    except EmptyPage:
+        page = p.page(p.num_pages)
+    return render(request, "adm/admin-tracking.html",{'track':page})

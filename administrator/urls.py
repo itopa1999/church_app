@@ -32,5 +32,15 @@ urlpatterns = [
     path('admin-district-transaction', views.admin_district_transaction, name="admin-district-transaction"),
     path('admin_district_transaction_download', views.admin_district_transaction_download, name="admin_district_transaction_download"),
     
+    path('admin-tracking', views.admin_tracking, name="admin-tracking"),
+
+    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+
     
 ]

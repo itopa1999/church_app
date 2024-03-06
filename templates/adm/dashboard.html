@@ -11,6 +11,15 @@
   }
   </style>
 <div class="container col-lg-12" data-aos="fade-up">
+  <div class="pagetitle">
+    <h4>Welcome Back {{request.user.first_name}} <i class="bi bi-person-fill"></i></h4>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'admin-dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"></li>
+      </ol>
+    </nav>
+  </div>
   <section class="section dashboard ">
     <div class="container-fluid">
     <div class="row"> 
@@ -226,6 +235,52 @@
           </div>
         </div>
 
+        <div class="col-xxl-12 col-md-12">
+          <div class="card car info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Total Sermons:</h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-cart"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{district_new_member}}</h6>
+                  <span class="text-primary small pt-1 fw-bold"></span> <span class="text-muted small pt-2 ps-1">All District New Comer</span>
+                </div>
+              </div>
+              <div class=" " style='float:right;'>
+                <a class='text-white btn btn-primary' href="{% url 'admin-district-new-member' %}" ><i class="bi bi-eye"></i></a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-xxl-12 col-md-12">
+          <div class="card car info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Total Testimonies:</h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-cart"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{district_new_member}}</h6>
+                  <span class="text-primary small pt-1 fw-bold"></span> <span class="text-muted small pt-2 ps-1">All District New Comer</span>
+                </div>
+              </div>
+              <div class=" " style='float:right;'>
+                <a class='text-white btn btn-primary' href="{% url 'admin-district-new-member' %}" ><i class="bi bi-eye"></i></a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        
+
 
         <!-- Recent Activity -->
         <div class="card car">
@@ -245,7 +300,7 @@
               {% endfor %}
               <center>
                 <div class="mt-3" style='align:center;'>
-                  <a class='text-white btn btn-secondary ' href="" ><i class="bi bi-eye"></i> view all</a>
+                  <a class='text-white btn btn-secondary ' href="{% url 'admin-tracking' %}" ><i class="bi bi-eye"></i> view all</a>
                 </div>
               </center>
               {% else %}

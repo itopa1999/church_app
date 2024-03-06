@@ -49,7 +49,7 @@
         {% if user.groups.all.0.name == 'admin' %}
         <a href="{% url 'admin-dashboard' %}" class="scrollto"><img src="{% static 'assets/img/logo.png' %}" alt="" title=""></a>
         <div class="text-white"> CANAANLAND DCC HEADQUATERS</div>
-        {% else %}
+        {% elif user.groups.all.0.name == 'secretary' %}
         <a href="{% url 'secretary-dashboard' %}" class="scrollto"><img src="{% static 'assets/img/logo.png' %}" alt="" title=""></a>
         <div class="text-white"> CANAANLAND DCC HEADQUATERS</div>
         {% endif %}

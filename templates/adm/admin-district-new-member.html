@@ -29,7 +29,16 @@
       border-radius:5px;
     }
 </style>
-
+<div class="pagetitle container">
+  <h4>Welcome Back {{request.user.first_name}} <i class="bi bi-person-fill"></i></h4>
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'admin-dashboard' %}">Dashboard</a></li>
+      <li class="breadcrumb-item">All New Church Member</li>
+      <li class="breadcrumb-item"></li>
+    </ol>
+  </nav>
+</div>
 <div class="container-fluid col-lg-12" data-aos="fade-up">
     <center>
         <section id="counts" class="counts">

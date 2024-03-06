@@ -7,6 +7,21 @@
 </style>
 {% block content %}
 <div class="container col-lg-12" data-aos="fade-up">
+  <div class="pagetitle container">
+    <h4>Welcome Back {{request.user.first_name}} <i class="bi bi-person-fill"></i></h4>
+    <nav>
+      <ol class="breadcrumb">
+        {% if user.groups.all.0.name == 'admin' %}
+        <li class="breadcrumb-item"><a href="{% url 'admin-dashboard' %}">Dashboard</a></li>
+        {% endif %}
+        {% if user.groups.all.0.name == 'secretary' %}
+        <li class="breadcrumb-item"><a href="{% url 'secretary-dashboard' %}">Dashboard</a></li>
+        {% endif %}
+        <li class="breadcrumb-item">Program Report</li>
+        <li class="breadcrumb-item"></li>
+      </ol>
+    </nav>
+  </div>
   <div class="row">
     <b><span>2024 REPORTS</span><hr></b>
     <div class="card col-lg-6  border-0">
