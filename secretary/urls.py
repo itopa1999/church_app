@@ -19,8 +19,10 @@ urlpatterns = [
     path('add-income/<int:pk>', views.add_income, name="add-income"),
     path('tran-receipt/<int:pk>', views.tran_receipt, name="tran-receipt"),
     path('secretary-dashboard', views.secretary_dashboard, name="secretary-dashboard"),
+    path('send-district-mail/<int:pk>', views.send_district_mail, name="send-district-mail"),
+    path('district-attendance/<int:pk>', views.district_attendance, name="district-attendance"),
+    path('add-district-attendance/<int:pk>', views.add_district_attendance, name="add-district-attendance"),
+    path('district-attendance-download/<int:pk>', views.district_attendance_download, name="district-attendance-download"),
     path('add-income/<int:pk>', views.add_income, name="add-income"),
-    path('add-income/<int:pk>', views.add_income, name="add-income"),
-    
     
 ]

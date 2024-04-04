@@ -22,8 +22,24 @@
       border-radius:5px;
     }
 </style>
-
-<div class="container-fluid col-lg-12" data-aos="fade-up">
+<div class="pagetitle container">
+  <h4>Welcome Back {{request.user.first_name}} <i class="bi bi-person-fill"></i></h4>
+  <nav>
+    <ol class="breadcrumb">
+        {% if user.groups.all.0.name == 'secretary' %}
+        <li class="breadcrumb-item"><a href="{% url 'secretary-dashboard' %}">Dashboard</a></li>
+        {% endif %}
+        {% if user.groups.all.0.name == 'admin' %}
+        <li class="breadcrumb-item"><a href="{% url 'admin-dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'admin-district' %}">All Districts</a></li>
+        <li class="breadcrumb-item">{{district}}</li>
+        {% endif %}
+      <li class="breadcrumb-item">{{district}} Income</li>
+      <li class="breadcrumb-item"></li>
+    </ol>
+  </nav>
+</div>
+<div class="container col-lg-12" data-aos="fade-up">
     <center>
         <section id="counts" class="counts">
           <div class="container">

@@ -12,6 +12,9 @@ from users.models import *
 from .forms import *
 from .decorators import *
 from administrator.models import Tracking
+import secrets
+import requests
+from secretary.models import Transaction, Income
 # Create your views here.
 
 
@@ -209,4 +212,64 @@ def hymns(request):
     return render(request, 'users/hymns.html',{'form':form})
 
 
+
+def offerings(request):
+    form = MemberForm()
+    return render(request, 'users/offerings.html',{'form':form})
+
+
+def payment(request):
+    if request.method == 'POST':
+        ref = secrets.token_urlsafe(15)
+        amount = request.POST.get('amount')
+        url = 'https://api.flutterwave.com/v3/payments'
+        headers = {
+            "Authorization": f"Bearer {settings.FLUTTER_SECRET_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "tx_ref": ref,
+            "amount": amount,
+            "currency": "NGN",
+            "payment_type": 'card',
+            "redirect_url": "http://localhost:8000/client/api/confirm_deposit/?amount=" + amount,
+            "customer": {
+                "email": request.POST.get('email'),
+                "phonenumber": request.POST.get('phone'),
+                "name": request.POST.get('name')
+            },
+            "customizations": {
+                "title": "Paying for " + str(request.POST.get('title')),
+                "description": "Deposit Account",
+                "logo": "https://your_logo_url.com",
+            }
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=data)
+            print(response.status_code)
+            print(response.content)
+            if response.status_code == 200:
+                district_income = Income.objects.get(id=1)
+                district_income.income += 200
+                district_income.save()
+
+                # Create a transaction record for the client (CREDIT)
+                Transaction.objects.create(
+                    user=user,
+                    description='Deposited ' + str(amount),
+                    amount=amount,
+                    ref=secrets.token_urlsafe(15),
+                    type='credit',
+                )
+            return response.status_code
+        except requests.exceptions.RequestException as err:
+            print(str(err)) 
+    return redirect('offerings')
+                
+           
+def ConfirmDeposit(request):    
+    
+    return Response({"message":"Deposit was successful"}, status=status.HTTP_202_ACCEPTED)
 

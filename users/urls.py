@@ -12,6 +12,8 @@ urlpatterns = [
     path('vision', views.vision, name="vision"),
     path('fft', views.fft, name="fft"),
     path('hymns', views.hymns, name="hymns"), 
+    path('hymns', views.hymns, name="hymns"), 
+    path('offerings', views.offerings, name="offerings"), 
     
     path('admin-addadm/<int:pk>', views.admin_addadm, name="admin-addadm"), 
     path('admin-edit-admin/<int:pk>', views.admin_edit_admin, name="admin-edit-admin"), 

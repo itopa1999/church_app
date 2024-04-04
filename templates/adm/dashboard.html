@@ -10,7 +10,7 @@
     box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
   }
   </style>
-<div class="container col-lg-12" data-aos="fade-up">
+<div class="container-fluid col-lg-12" data-aos="fade-up">
   <div class="pagetitle">
     <h4>Welcome Back {{request.user.first_name}} <i class="bi bi-person-fill"></i></h4>
     <nav>
@@ -245,12 +245,12 @@
                   <i class="bi bi-cart"></i>
                 </div>
                 <div class="ps-3">
-                  <h6>{{district_new_member}}</h6>
+                  <h6>{{sermon}}</h6>
                   <span class="text-primary small pt-1 fw-bold"></span> <span class="text-muted small pt-2 ps-1">All District New Comer</span>
                 </div>
               </div>
               <div class=" " style='float:right;'>
-                <a class='text-white btn btn-primary' href="{% url 'admin-district-new-member' %}" ><i class="bi bi-eye"></i></a>
+                <a class='text-white btn btn-primary' href="{% url 'admin-sermon' %}" ><i class="bi bi-eye"></i></a>
               </div>
             </div>
 
@@ -267,12 +267,12 @@
                   <i class="bi bi-cart"></i>
                 </div>
                 <div class="ps-3">
-                  <h6>{{district_new_member}}</h6>
+                  <h6>{{testimony}}</h6>
                   <span class="text-primary small pt-1 fw-bold"></span> <span class="text-muted small pt-2 ps-1">All District New Comer</span>
                 </div>
               </div>
               <div class=" " style='float:right;'>
-                <a class='text-white btn btn-primary' href="{% url 'admin-district-new-member' %}" ><i class="bi bi-eye"></i></a>
+                <a class='text-white btn btn-primary' href="{% url 'admin-testimony' %}" ><i class="bi bi-eye"></i></a>
               </div>
             </div>
 

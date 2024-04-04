@@ -7,7 +7,7 @@ urlpatterns = [
     
     path('admin-member', views.member, name="admin-member"),
     path('admin-question', views.question1, name="admin-question"),
-    path('admin-logout', LogoutView.as_view(template_name= "index.html"),name='admin-logout'),
+    path('admin-logout', LogoutView.as_view(template_name= "users/index.html"),name='admin-logout'),
     path('question', views.question, name="question"),
     
     path('filter-results-download', views.filter_results_download, name="filter-results-download"),
@@ -34,11 +34,11 @@ urlpatterns = [
     
     path('admin-tracking', views.admin_tracking, name="admin-tracking"),
 
-    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
-    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
-    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
-    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
-    path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
+    path('admin-sermon', views.admin_sermon, name="admin-sermon"),
+    path('admin-testimony', views.admin_testimony, name="admin-testimony"),
+    path('admin-testimony-approve/<int:pk>', views.admin_testimony_approve, name="admin-testimony-approve"),
+    path('admin-testimony-delete/<int:pk>', views.admin_testimony_delete, name="admin-testimony-delete"),
+    path('send-admin-mail', views.send_admin_mail, name="send-admin-mail"),
     path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
     path('admin_filter_church_results_download', views.admin_filter_church_results_download, name="admin_filter_church_results_download"),
 

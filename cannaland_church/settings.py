@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -65,7 +67,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    
+    'django_auto_logout.middleware.auto_logout'
 ]
+
+AUTO_LOGOUT = {'IDLE_TIME': timedelta(minutes=10),
+               'MESSAGE': 'The session has expired. Please login again to continue.',
+               }
 
 ROOT_URLCONF = 'cannaland_church.urls'
 AUTH_USER_MODEL ='users.User'

@@ -9,4 +9,6 @@ admin.site.register(Transaction)
 admin.site.register(Church_Member)
 admin.site.register(Church_New_Member)
 
+admin.site.register(Testimony)
+admin.site.register(Sermon)
 # Register your models here.

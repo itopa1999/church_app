@@ -5,6 +5,9 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 import csv
 from users.models import *
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
 #from users.forms import *
 from .filters import *
 from .forms import *
@@ -28,10 +31,12 @@ def secretary_dashboard(request):
     district_new_member = Church_New_Member.objects.filter(district = district)
     district_income = Income.objects.get(district = district)
     district_transaction = Transaction.objects.filter(district = district)
+    district_attendance = Church_Attendance.objects.filter(district = district)
     form3=ChurchMemberForm()
     form4=ChurchNewMemberForm()
+    
     return render(request, "secretary/secretary-dashboard.html",{'district':district,'district_user':district_user,'district_transaction':district_transaction,'district_member':district_member,
-                            'district_income':district_income,'form3':form3,'form4':form4,'district_new_member':district_new_member})
+                            'district_income':district_income,'form3':form3,'form4':form4,'district_new_member':district_new_member,'district_attendance':district_attendance})
 
     
 
@@ -297,3 +302,80 @@ def add_income(request, pk):
 def tran_receipt(request, pk):
     
     return render(request, "secretary/tran-receipt.html",{})
+
+@login_required(login_url='admin-login')
+def send_district_mail(request, pk):
+    district=District.objects.get(id=pk)
+    if request.method == 'POST':
+        member = Church_Member.objects.filter(district=district)
+        for i in member:
+            mail_subject = request.POST.get('subject').upper()
+            message = render_to_string(
+                'email_template/send_members_email.html',
+                {
+                    'message':request.POST.get('message')
+                },
+            )
+            email = EmailMessage(mail_subject, message, to=[i.email])
+            email.content_subtype = "html"
+            email.send(fail_silently=False)
+        messages.success(request, 'email has been sent successfully')
+        return redirect('district-member', district.id)
+
+
+@login_required(login_url='admin-login')
+def district_attendance(request, pk): 
+    district=District.objects.get(id=pk)
+    form = DistrictAttendanceForm()
+    district_attendance = Church_Attendance.objects.filter(district = district)
+    myFilter=DistrictAttendanceFilter(request.GET, queryset=district_attendance)
+    district_attendance=myFilter.qs
+    p=Paginator(district_attendance, 20)
+    page_num = request.GET.get('page',1) 
+    try:
+        page = p.page(page_num)
+    except PageNotAnInteger:
+        page = p.page(1) 
+    except EmptyPage:
+        page = p.page(p.num_pages)
+    return render(request, "secretary/district-attendance.html",{'district':district,'district_attendance':page,'form':form})
+
+@login_required(login_url='admin-login')
+@secretary_only
+def add_district_attendance(request, pk):
+    district=District.objects.get(id=pk)
+    form = DistrictAttendanceForm()
+    if request.method == 'POST':
+        form = DistrictAttendanceForm(request.POST)
+        if form.is_valid():
+            form=form.save(commit=False)
+            form.district = district
+            form.save()
+            Tracking.objects.create(
+                user= request.user.first_name,
+                action = str(request.user.first_name) + 'takes attendance for ' + str(district) + ' Church',
+            )
+            messages.success(request, 'Attecndance successfully taken for ' + str(district) )
+    return redirect('district-attendance', district.id)
+
+
+
+@login_required(login_url='admin-login')
+def district_attendance_download(request, pk):
+    district=District.objects.get(id=pk)
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + 'download ' + str(district) + ' Attendance Report'
+    )
+    attendance = Church_Attendance.objects.filter(district =district)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename ="Attendance Report.csv"'
+    
+    csv_writer = csv.writer(response)
+    header_row = [field_name.verbose_name for field_name in Church_Attendance._meta.fields]
+    csv_writer.writerow(header_row)
+    
+    for attendance in attendance:
+        data_row = [str(getattr(attendance, field_name.name)) for field_name in Church_Attendance._meta.fields]
+        csv_writer.writerow(data_row)
+    return response

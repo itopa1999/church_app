@@ -114,3 +114,49 @@ class Church_New_Member(models.Model):
         
     def __str__(self):
         return f"{self.district}"
+    
+
+
+   
+class Sermon(models.Model):
+    title = models.CharField(max_length=200, blank=True,null=True) 
+    paragraph1 = models.TextField(max_length=5000, blank=True,null=True)
+    paragraph2 = models.TextField(max_length=5000, blank=True,null=True)
+    paragraph3 = models.TextField(max_length=5000, blank=True,null=True)
+    paragraph4 = models.TextField(max_length=5000, blank=True,null=True)
+    paragraph5 = models.TextField(max_length=5000, blank=True,null=True)
+    paragraph6 = models.TextField(max_length=5000, blank=True,null=True)
+    paragraph7 = models.TextField(max_length=5000, blank=True,null=True)
+    paragraph8 = models.TextField(max_length=5000, blank=True,null=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True,null=True)
+    img = models.ImageField(blank=True,null=True)
+    updated_at =  models.DateTimeField(auto_now=True,null=True)
+    
+    
+    class Meta:
+        ordering = ['-date']
+        indexes = [
+            models.Index(fields=['-date']),
+        ]
+        
+    def __str__(self):
+        return self.title
+    
+
+
+class Testimony(models.Model):
+    name = models.CharField(max_length=500, blank=True, null=True)
+    email = models.EmailField(max_length=500, blank=True, null=True)
+    testimony = models.TextField(max_length=1600, blank=True, null=True)
+    approve = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at =  models.DateTimeField(auto_now=True,null=True)
+    
+        
+    class Meta:
+        ordering = ['-date']
+        indexes = [
+            models.Index(fields=['-date']),
+        ]
+    def __str__(self):
+        return str(self.name)

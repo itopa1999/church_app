@@ -75,9 +75,11 @@ def dashboard(request):
     transaction = Transaction.objects.all()[:5]
     church_member = Church_Member.objects.all()[:5]
     track = Tracking.objects.all()[:6]
+    sermon = Sermon.objects.count()
+    testimony = Testimony.objects.filter(approve=True).count()
     return render(request, "adm/dashboard.html", {'year':year,'member_count':member_count,'attend':attend,'question_count':question_count,
                         'district':district,'district_member':district_member, 'district_user':district_user,'income':income,'transaction':transaction,
-                        'church_member':church_member,'track':track,'district_new_member':district_new_member})
+                        'church_member':church_member,'track':track,'district_new_member':district_new_member,'sermon':sermon,'testimony':testimony})
 
 
 
@@ -267,6 +269,7 @@ def admin_disrict_details(request, pk):
     district_new_member = Church_New_Member.objects.filter(district = district)
     district_income = Income.objects.get(district = district)
     district_transaction = Transaction.objects.filter(district = district)
+    district_attendance = Church_Attendance.objects.filter(district = district)
     form1 = UserCreationForm()
     form2 = UserChangeForm(instance=district_user)
     form3=ChurchMemberForm()
@@ -282,7 +285,8 @@ def admin_disrict_details(request, pk):
             )
             messages.success(request, str(district) + ' has been updated sccessfully')
     return render(request, "adm/district-details.html",{'district':district,'district_user':district_user,'district_transaction':district_transaction,'district_member':district_member,
-                            'district_income':district_income,'form':form,'form1':form1,'form2':form2,'form3':form3,'form4':form4,'district_new_member':district_new_member})
+                            'district_income':district_income,'form':form,'form1':form1,'form2':form2,'form3':form3,'form4':form4,'district_new_member':district_new_member,
+                            'district_attendance':district_attendance})
 
 
 @login_required(login_url='admin-login')
@@ -464,3 +468,62 @@ def admin_tracking(request):
     except EmptyPage:
         page = p.page(p.num_pages)
     return render(request, "adm/admin-tracking.html",{'track':page})
+
+
+@login_required(login_url='admin-login')
+@admin_only
+def admin_sermon(request):
+    sermon = Sermon.objects.all()
+    return render(request, "adm/admin-sermon.html",{'sermon':sermon})
+
+
+@login_required(login_url='admin-login')
+@admin_only
+def admin_testimony(request):
+    testimony = Testimony.objects.all()
+    return render(request, "adm/admin-testimony.html",{'testimony':testimony})
+
+@login_required(login_url='admin-login')
+@admin_only
+def admin_testimony_approve(request, pk):
+    testimony = Testimony.objects.get(id=pk)
+    testimony.approve = True
+    testimony.save()
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' Approves ' + str(testimony.name) + ' Testimony'
+    )
+    messages.success(request, 'Testimony has been approved')
+    return redirect('admin-testimony')
+    
+@login_required(login_url='admin-login')
+@admin_only  
+def admin_testimony_delete(request, pk):
+    testimony = Testimony.objects.get(id=pk)
+    Tracking.objects.create(
+        user= request.user.first_name,
+        action = str(request.user.first_name) + ' deletes ' + str(testimony.name) + ' Testimony'
+    )
+    testimony.delete()
+    messages.success(request, 'Testimony has been deleted successfully')
+    return redirect('admin-testimony')
+
+
+@login_required(login_url='admin-login')
+@admin_only 
+def send_admin_mail(request):
+    if request.method == 'POST':
+        admin = User.objects.filter(groups=Group.objects.get(name='secretary'))
+        for i in admin:
+            mail_subject = request.POST.get('subject').upper()
+            message = render_to_string(
+                'email_template/send_members_email.html',
+                {
+                    'message':request.POST.get('message')
+                },
+            )
+            email = EmailMessage(mail_subject, message, to=[i.email])
+            email.content_subtype = "html"
+            email.send(fail_silently=False)
+        messages.success(request, 'email has been sent successfully')
+        return redirect('admin-district-admin')

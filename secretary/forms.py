@@ -23,3 +23,9 @@ class TransactionForm(forms.ModelForm):
         exclude=['district','date']
         
         
+class DistrictAttendanceForm(forms.ModelForm):
+    class Meta:
+        model=Church_Attendance
+        exclude=['district','date']
+        
+        

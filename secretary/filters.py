@@ -32,3 +32,11 @@ class DistrictTransactionFilter(django_filters.FilterSet):
     class Meta:
         model = Transaction
         fields = ['type','date__lte','date__gte']
+        
+        
+class DistrictAttendanceFilter(django_filters.FilterSet):
+    date__lte = django_filters.DateFilter(field_name='date', lookup_expr='lte')
+    date__gte = django_filters.DateFilter(field_name='date', lookup_expr='gte')
+    class Meta:
+        model = Transaction
+        fields = ['date__lte','date__gte']

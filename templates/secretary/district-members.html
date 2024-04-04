@@ -68,7 +68,8 @@
             <div class="container-fluid">
                   <a href="{% url 'all_church_member_download' district.id %}"><button type="button" class="btn btn-success m-2"><i class="bi bi-download"></i>. Download all {{district}} Members</button></a>
                   <button data-bs-toggle="modal" data-bs-target="#filterResult" type="button" class="m-2 btn btn-primary"><i class="bi bi-filter"></i>. Filters</button>
-              </div>
+                  <button data-bs-toggle="modal" data-bs-target="#SendMail" type="button" class="m-2 btn btn-secondary"><i class="bi bi-inbox"></i>. send mail to all member</button>
+              </div> 
       </center>
 
       <section>
@@ -213,6 +214,36 @@
     </div>
   </div>
 </div>
+
+
+
+      
+<div class="modal fade" id="SendMail" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Send Mail to all {{district}} Member</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{% url 'send-district-mail' district.id %}" >
+          {% csrf_token %}
+          <div class="mb-3 mt-3">
+            <input name ='subject' type="text" class="" placeholder=" Subject" >
+          </div>
+          <div class="mb-3 mt-3">
+            <textarea name ='message' type="text" class="" placeholder=" Type message here" ></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">send mail</button>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 <script>
   function submitForm(url){
       document.getElementById('myForm').action =url;

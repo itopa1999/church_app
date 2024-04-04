@@ -39,8 +39,6 @@
 </head>
 
 <body onload="message()">
-
-  <!-- ======= Header ======= -->
   <header id="header" class="d-flex align-items-center bg-dark">
     <div class="container-fluid container-xxl d-flex align-items-center">
 
@@ -64,6 +62,18 @@
           {% if request.user.is_authenticated %}
           {% if user.groups.all.0.name == 'admin' %}
           <li><a class="nav-link scrollto active" href="{% url 'admin-dashboard' %}">Home</a></li>
+          <li class="dropdown"><a href="#"><span>Links</span> <i class="bi bi-chevron-down"></i></a>
+            <ul>
+              <li><a href="{% url 'admin-district' %}">All District</a></li>
+              <li><a href="{% url 'admin-district-member' %}">All Districts Church Members</a></li>
+              <li><a href="{% url 'admin-district-new-member' %}">All Districts New Church Members</a></li>
+              <li><a href="{% url 'admin-district-admin' %}">District Secretary Admins</a></li>
+              <li><a href="{% url 'admin-district-transaction' %}">Transaction Summary</a></li>
+              <li><a href="{% url 'admin-sermon' %}">All Sermon</a></li>
+              <li><a href="{% url 'admin-testimony' %}">All Testimony</a></li>
+              <li><a href="{% url 'admin-tracking' %}">All Activity</a></li>
+            </ul>
+          </li>
           {% else %}
           <li><a class="nav-link scrollto active" href="{% url 'secretary-dashboard' %}">Home</a></li>
           {% endif %}
